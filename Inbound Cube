@@ -1,0 +1,177 @@
+hostname LAB-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered 5000000
+no logging console
+no logging monitor
+enable password 7 0707314D4A04100B59405858
+!
+aaa new-model
+!
+!
+aaa authentication login CONSOLE local enable
+aaa authentication login VTY group tacacs+ local enable
+aaa authorization exec default group tacacs+ local if-authenticated 
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 0 default start-stop group tacacs+
+aaa accounting commands 5 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone WIB 7 0
+!
+no ip source-route
+ip cef
+!
+!
+!
+!
+!
+!
+ip domain name lab.com
+ip host cusp1.lab.com 10.1.1.1
+ip host cusp3.lab.com 10.3.3.3
+ip host cusp2.lab.com 10.2.2.2
+ip host cusp4.lab.com 10.4.4.4
+ip host _sip._udp.jktcusp.lab.com srv 1 50 5060 cusp1.lab.com
+ip host _sip._udp.jktcusp.lab.com srv 1 50 5060 cusp3.lab.com
+ip host _sip._udp.jktcusp.lab.com srv 2 50 5060 cusp2.lab.com
+ip host _sip._udp.jktcusp.lab.com srv 2 50 5060 cusp4.lab.com
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+voice-card 0
+ dspfarm
+ dsp services dspfarm
+!
+!
+!
+voice service voip
+ ip address trusted list
+  ipv4 0.0.0.0 0.0.0.0
+ mode border-element 
+ allow-connections sip to sip
+ no supplementary-service sip handle-replaces
+ signaling forward unconditional
+ fax protocol t38 version 0 ls-redundancy 0 hs-redundancy 0 fallback none
+ sip
+  bind control source-interface Loopback500
+  bind media source-interface Loopback500
+  rel1xx disable
+  min-se 360 session-expires 360
+  header-passing
+  midcall-signaling passthru media-change
+  early-offer forced
+  g729 annexb-all
+!
+voice class codec 1
+ codec preference 1 g729r8
+ codec preference 2 g711ulaw
+ codec preference 3 g711alaw
+!
+voice class codec 2
+ codec preference 1 g729br8
+ codec preference 2 g729r8
+ codec preference 3 g711ulaw
+!
+voice class sip-profiles 250
+ request INVITE sip-header Call-Info add "X-Cisco-CCBProbe:id:1.1.1.1;loc:JKT;trunks:30" 
+!
+!
+!
+!
+voice translation-rule 1
+ rule 1 /18801/ /55554991/
+ rule 2 /18802/ /55554991/
+ rule 3 /18803/ /55554991/
+ rule 4 /18804/ /55554991/
+ rule 5 /18805/ /55554991/
+ rule 6 /18806/ /55554991/
+ rule 7 /18807/ /55554991/
+ rule 8 /18808/ /55554991/
+ rule 9 /18809/ /55554991/
+ rule 10 /18810/ /55554991/
+ rule 11 /18811/ /55554991/
+ rule 12 /18812/ /55554991/
+ rule 13 /^2155$/ /55553001/
+ rule 14 /357..$/ /55554992/
+ rule 15 /1111/ /55554993/
+ rule 16 /^21550$/ /55553005/
+!
+voice translation-rule 3
+ rule 1 /^62/ /+\0/
+ rule 2 /^0\(.*\)/ /+62\1/
+ rule 3 /.*/ /+62\0/
+!
+voice translation-rule 4
+ rule 1 /^02180634.../ /55554994/
+ rule 2 /^2180634.../ /55554994/
+!
+voice translation-rule 5
+ rule 1 /^5262/ /+62/
+ rule 2 /^520/ /+62/
+!
+voice translation-rule 201
+ rule 1 /^275/ /276/
+!
+!
+voice translation-profile CCB_Long_Number
+ translate called 5
+!
+voice translation-profile CCB_Outbound
+ translate called 3
+!
+voice translation-profile Long_Number
+ translate called 4
+!
+voice translation-profile cucmin
+ translate called 201
+!
+voice translation-profile inbound
+ translate called 1
+!
+!
+!
+!
+application
+ service survivability flash:survivability.tcl
+  paramspace english language en
+  paramspace english index 0
+  paramspace english location flash
+  paramspace english prefix en
+  param ccb id:1.1.1.1;loc:JKT;trunks:30
+ !
+ service cvp_cc flash:cvp_ccb_vxml.tcl
+ !
+!
+
+!
+!
+hw-module pvdm 0/0
+!
+hw-module pvdm 0/1
+!
+hw-module pvdm 0/2
+!
+
+!
+redundancy
+!
+!
+!
+!
+!
