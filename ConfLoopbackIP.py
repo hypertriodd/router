@@ -1,12 +1,12 @@
 import pexpect
 
-R1='192.168.195.21'
-UN='ciscouser'
-PW='cisco.123'
-DISPA='term len 0'
-COMM1='conf t'
-COMM2='int lo 0'
-COMM3='ip add 1.1.1.1 255.255.255.255'
+R1='192.168.195.21' //IP Address Router
+UN='ciscouser' // Username
+PW='cisco.123' // Password
+DISPA='term len 0' //disable paging
+COMM1='conf t' // Enter Global Config
+COMM2='int lo 0' //Interfaces
+COMM3='ip add 1.1.1.1 255.255.255.255' //IP address
 #Open Telnet
 ssh='ssh -l ciscouser '+R1
 t=pexpect.spawn(ssh)
